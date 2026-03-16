@@ -32,9 +32,9 @@ const win = tailweb.Window({
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `title` | `string` | `"Tailweb"` | Title shown in the window header |
-| `tailwindAccentColor` | `string` | `"gray-500"` | Accent color — Tailwind name or hex string |
-| `key` | `string` | — | If set, shows a key screen on load. Window is locked until the correct key is entered |
-| `getKey` | `function` | — | Called when the user clicks "Get Key" on the key screen |
+| || `tailwindAccentColor` | `string` | `"gray-500"` | Accent color — Tailwind name or hex string |
+| || `key` | `string` | — | If set, shows a key screen on load. Window is locked until the correct key is entered |
+| || `getKey` | `function` | — | Called when the user clicks "Get Key" on the key screen |
 
 ### Supported accent color names
 
@@ -75,9 +75,9 @@ win.Button({
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `title` | `string` | `"Button"` | Text displayed on the button |
-| `callback` | `function` | — | Function called when button is clicked |
-| `icon` | `string` | — | Any valid [Lucide](https://lucide.dev/icons/) icon name e.g. `"trash-2"` |
-| `iconColor` | `string` | `"#ffffff"` | Icon color — Tailwind name or hex string. Defaults to white |
+| || `callback` | `function` | — | Function called when button is clicked |
+| || `icon` | `string` | — | Any valid [Lucide](https://lucide.dev/icons/) icon name e.g. `"trash-2"` |
+| || `iconColor` | `string` | `"#ffffff"` | Icon color — Tailwind name or hex string. Defaults to white |
 
 ### Example
 
@@ -117,9 +117,9 @@ win.Label({
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `title` | `string` | `""` | Text content of the label |
-| `size` | `number` | `10` | Font size in pixels |
-| `icon` | `string` | — | Any valid [Lucide](https://lucide.dev/icons/) icon name e.g. `"settings"` |
-| `iconColor` | `string` | `"#ffffff"` | Icon color — Tailwind name or hex string. Defaults to white |
+| || `size` | `number` | `10` | Font size in pixels |
+| || `icon` | `string` | — | Any valid [Lucide](https://lucide.dev/icons/) icon name e.g. `"settings"` |
+| || `iconColor` | `string` | `"#ffffff"` | Icon color — Tailwind name or hex string. Defaults to white |
 
 ### Example
 
@@ -152,10 +152,10 @@ win.TextBox({
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `title` | `string` | — | Small label shown above the input |
-| `placeholder` | `string` | `""` | Placeholder text inside the input |
-| `variable` | `ref object` | — | Ref object to bind the value to (see below) |
-| `value` | `string` | `""` | Default value pre-filled in the input |
-| `updateBlur` | `boolean` | `false` | `false` = updates on every keystroke, `true` = updates only on blur |
+| || `placeholder` | `string` | `""` | Placeholder text inside the input |
+| || `variable` | `ref object` | — | Ref object to bind the value to (see below) |
+| || `value` | `string` | `""` | Default value pre-filled in the input |
+| || `updateBlur` | `boolean` | `false` | `false` = updates on every keystroke, `true` = updates only on blur |
 
 ### Variable binding
 

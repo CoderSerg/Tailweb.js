@@ -121,7 +121,10 @@
       let minimized = false;
       minimizeBtn.addEventListener("click", () => {
         minimized = !minimized;
-        content.style.display = minimized ? "none" : "block";
+        content.style.display = minimized ? "none" : "flex";
+        win.style.minHeight = minimized ? "0" : "";
+        win.style.maxHeight = minimized ? "none" : "";
+        win.style.height = minimized ? "auto" : "";
       });
 
       closeBtn.addEventListener("click", () => win.remove());
@@ -133,7 +136,7 @@
 
       const content = document.createElement("div");
       content.className = "tailweb-content";
-      content.style.cssText = "padding: 12px; display:flex; flex-direction:column; gap:8px;";
+      content.style.cssText = "padding: 12px; display:flex; flex-direction:column; gap:10px;";
 
       win.appendChild(titlebar);
       win.appendChild(content);
