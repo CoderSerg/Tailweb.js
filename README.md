@@ -202,7 +202,7 @@ win.Key({ key: "Escape" })
 
 ## `win.Lock()`
 
-Re-shows the key screen, locking the window until the correct key is entered again. Does nothing if no `key` was set on the window or if already locked.
+Re-shows the key screen, locking the window until the correct key is entered again. Does nothing if no key system was set up on the window or if already locked.
 
 ### Syntax
 

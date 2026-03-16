@@ -19,8 +19,12 @@
         font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
         position: fixed;
         z-index: 2147483647;
-        min-width: 280px;
-        max-width: 520px;
+        min-width: 300px;
+        max-width: 620px;
+        min-height: 360px;
+        max-height: 478px;
+        display: flex;
+        flex-direction: column;
         box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.06);
         border-radius: 10px;
         overflow: hidden;
@@ -32,7 +36,7 @@
       .tailweb-content {
         user-select: text;
         overflow-y: auto;
-        max-height: 70vh;
+        flex: 1;
       }
       .tailweb-keyscreen {
         position: absolute;
@@ -46,6 +50,8 @@
         padding: 24px;
         background: #030712;
         border-radius: 10px;
+        min-width: 300px;
+        min-height: 360px;
       }
     `;
     document.head.appendChild(style);
