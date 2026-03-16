@@ -64,7 +64,9 @@ Adds a clickable button to the window.
 ```js
 win.Button({
   title,
-  callback
+  callback,
+  icon,
+  iconColor
 })
 ```
 
@@ -74,6 +76,8 @@ win.Button({
 |---|---|---|---|
 | `title` | `string` | `"Button"` | Text displayed on the button |
 | `callback` | `function` | — | Function called when button is clicked |
+| `icon` | `string` | — | Any valid [Lucide](https://lucide.dev/icons/) icon name e.g. `"trash-2"` |
+| `iconColor` | `string` | `"#ffffff"` | Icon color — Tailwind name or hex string. Defaults to white |
 
 ### Example
 
@@ -81,6 +85,13 @@ win.Button({
 win.Button({
   title: "Say Hello",
   callback: () => console.log("hello")
+})
+
+win.Button({
+  title: "Delete",
+  icon: "trash-2",
+  iconColor: "red-500",
+  callback: () => console.log("deleted")
 })
 ```
 
@@ -95,7 +106,9 @@ Adds a static text label to the window.
 ```js
 win.Label({
   title,
-  size
+  size,
+  icon,
+  iconColor
 })
 ```
 
@@ -105,12 +118,15 @@ win.Label({
 |---|---|---|---|
 | `title` | `string` | `""` | Text content of the label |
 | `size` | `number` | `10` | Font size in pixels |
+| `icon` | `string` | — | Any valid [Lucide](https://lucide.dev/icons/) icon name e.g. `"settings"` |
+| `iconColor` | `string` | `"#ffffff"` | Icon color — Tailwind name or hex string. Defaults to white |
 
 ### Example
 
 ```js
 win.Label({ title: "Current session info", size: 13 })
-win.Label({ title: "v1.0.0", size: 9 })
+win.Label({ title: "Settings", icon: "settings", size: 12 })
+win.Label({ title: "Warning", icon: "triangle-alert", iconColor: "yellow-500", size: 11 })
 ```
 
 ---
@@ -249,10 +265,21 @@ When `key` is passed to `tailweb.Window()`, a key screen overlays the window on 
 | Button | Description |
 |---|---|
 | Exit | Removes the window entirely |
-| Get Key | Calls the `getKey` function you provided |
+| Get Key | Only shown if `getKey` is provided. Calls the function you passed |
 | Submit | Validates the entered key — dismisses the screen if correct, flashes red if wrong |
 
 All key screen elements follow the window's accent color.
+
+---
+
+## Icons
+
+`Button` and `Label` support icons via the [Lucide](https://lucide.dev/icons/) icon library, fetched automatically — no extra setup needed.
+
+- Icons render to the left of the text
+- Size matches the element's font size
+- Default color is white unless `iconColor` is set
+- `iconColor` accepts the same Tailwind names or hex strings as `tailwindAccentColor`
 
 ---
 
@@ -264,9 +291,9 @@ All element methods return the window instance, so you can chain:
 const win = tailweb.Window({ title: "Toolbox", tailwindAccentColor: "violet-500" })
 
 win
-  .Label({ title: "Config", size: 12 })
+  .Label({ title: "Config", icon: "settings", size: 12 })
   .TextBox({ title: "API Key", placeholder: "sk-...", updateBlur: true })
-  .Button({ title: "Submit", callback: () => console.log("submitted") })
+  .Button({ title: "Submit", icon: "check", callback: () => console.log("submitted") })
   .Key({ key: "F1" })
 ```
 
@@ -285,7 +312,7 @@ const win = tailweb.Window({
   getKey: () => window.open("https://yoursite.com/getkey")
 })
 
-win.Label({ title: "Fill out the form below", size: 11 })
+win.Label({ title: "Fill out the form below", icon: "clipboard", size: 11 })
 
 win.TextBox({
   title: "Name",
@@ -303,6 +330,7 @@ win.TextBox({
 
 win.Button({
   title: "Submit",
+  icon: "check",
   callback: () => {
     console.log("Name:", nameRef.__tailwebRef.value)
     console.log("Email:", emailRef.__tailwebRef.value)
@@ -311,11 +339,14 @@ win.Button({
 
 win.Button({
   title: "Lock",
+  icon: "lock",
   callback: () => win.Lock()
 })
 
 win.Button({
   title: "Close",
+  icon: "x",
+  iconColor: "red-500",
   callback: () => win.Remove()
 })
 

@@ -235,15 +235,38 @@
       console.log(`[Tailweb] Window "${title || "Tailweb"}" created.`);
 
       const api = {
-        Button({ title: btnTitle, callback } = {}) {
+        Button({ title: btnTitle, callback, icon, iconColor } = {}) {
           const btn = document.createElement("button");
-          btn.textContent = btnTitle || "Button";
           btn.style.cssText = `
             padding: 6px 14px; border-radius: 6px; border: 1px solid ${accentHex}33;
             background: ${accentHex}18; color: #fff; font-size: 12px; font-weight: 500;
             cursor: pointer; transition: background 0.15s, border-color 0.15s;
             font-family: inherit; width: fit-content; text-align: left; letter-spacing: 0.02em;
+            display: flex; align-items: center; gap: 6px;
           `;
+          if (icon) {
+            const iconColorMap = {
+              "gray-500": "#6b7280", "blue-500": "#3b82f6", "red-500": "#ef4444",
+              "green-500": "#22c55e", "purple-500": "#a855f7", "yellow-500": "#eab308",
+              "pink-500": "#ec4899", "orange-500": "#f97316", "cyan-500": "#06b6d4",
+              "indigo-500": "#6366f1", "teal-500": "#14b8a6", "violet-500": "#8b5cf6",
+            };
+            const resolvedColor = iconColorMap[iconColor] || iconColor || "#ffffff";
+            const iconWrap = document.createElement("span");
+            iconWrap.style.cssText = "display:flex;align-items:center;width:12px;height:12px;flex-shrink:0;";
+            fetch(`https://unpkg.com/lucide-static@latest/icons/${icon}.svg`)
+              .then(r => r.text())
+              .then(svg => {
+                iconWrap.innerHTML = svg;
+                const s = iconWrap.querySelector("svg");
+                if (s) {
+                  s.style.cssText = `width:12px;height:12px;stroke:${resolvedColor};fill:none;`;
+                }
+              });
+            btn.appendChild(iconWrap);
+          }
+          const txtNode = document.createTextNode(btnTitle || "Button");
+          btn.appendChild(txtNode);
           btn.addEventListener("mouseenter", () => {
             btn.style.background = accentHex + "33";
             btn.style.borderColor = accentHex + "88";
@@ -257,11 +280,32 @@
           return api;
         },
 
-        Label({ title: labelTitle, size } = {}) {
+        Label({ title: labelTitle, size, icon, iconColor } = {}) {
           const el = document.createElement("div");
           const px = size ? `${size}px` : "10px";
-          el.textContent = labelTitle || "";
-          el.style.cssText = `font-size: ${px}; color: #d1d5db; line-height: 1.5; padding: 1px 0;`;
+          el.style.cssText = `font-size: ${px}; color: #d1d5db; line-height: 1.5; padding: 1px 0; display:flex; align-items:center; gap:6px;`;
+          if (icon) {
+            const iconColorMap = {
+              "gray-500": "#6b7280", "blue-500": "#3b82f6", "red-500": "#ef4444",
+              "green-500": "#22c55e", "purple-500": "#a855f7", "yellow-500": "#eab308",
+              "pink-500": "#ec4899", "orange-500": "#f97316", "cyan-500": "#06b6d4",
+              "indigo-500": "#6366f1", "teal-500": "#14b8a6", "violet-500": "#8b5cf6",
+            };
+            const resolvedColor = iconColorMap[iconColor] || iconColor || "#ffffff";
+            const iconWrap = document.createElement("span");
+            iconWrap.style.cssText = `display:flex;align-items:center;width:${px};height:${px};flex-shrink:0;`;
+            fetch(`https://unpkg.com/lucide-static@latest/icons/${icon}.svg`)
+              .then(r => r.text())
+              .then(svg => {
+                iconWrap.innerHTML = svg;
+                const s = iconWrap.querySelector("svg");
+                if (s) {
+                  s.style.cssText = `width:${px};height:${px};stroke:${resolvedColor};fill:none;`;
+                }
+              });
+            el.appendChild(iconWrap);
+          }
+          el.appendChild(document.createTextNode(labelTitle || ""));
           content.appendChild(el);
           return api;
         },
