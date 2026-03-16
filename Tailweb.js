@@ -27,16 +27,25 @@
         resize: both;
         user-select: none;
       }
-      .tailweb-titlebar {
-        cursor: grab;
-      }
-      .tailweb-titlebar:active {
-        cursor: grabbing;
-      }
+      .tailweb-titlebar { cursor: grab; }
+      .tailweb-titlebar:active { cursor: grabbing; }
       .tailweb-content {
         user-select: text;
         overflow-y: auto;
         max-height: 70vh;
+      }
+      .tailweb-keyscreen {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        padding: 24px;
+        background: #030712;
+        border-radius: 10px;
       }
     `;
     document.head.appendChild(style);
@@ -70,7 +79,7 @@
   }
 
   const tailweb = {
-    Window({ title, tailwindAccentColor } = {}) {
+    Window({ title, tailwindAccentColor, key: requiredKey, getKey } = {}) {
       const accent = tailwindAccentColor || "gray-500";
       const accentMap = {
         "gray-500": "#6b7280", "blue-500": "#3b82f6", "red-500": "#ef4444",
@@ -82,21 +91,11 @@
 
       const win = document.createElement("div");
       win.className = "tailweb-window";
-      win.style.cssText = `
-        background: #030712;
-        border: 1px solid rgba(255,255,255,0.08);
-        top: 60px; right: 24px;
-        color: #fff;
-      `;
+      win.style.cssText = `background: #030712; border: 1px solid rgba(255,255,255,0.08); top: 60px; right: 24px; color: #fff;`;
 
       const titlebar = document.createElement("div");
       titlebar.className = "tailweb-titlebar";
-      titlebar.style.cssText = `
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 10px 14px;
-        background: rgba(255,255,255,0.04);
-        border-bottom: 1px solid rgba(255,255,255,0.07);
-      `;
+      titlebar.style.cssText = `display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.07);`;
 
       const titleEl = document.createElement("span");
       titleEl.style.cssText = `font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: ${accentHex};`;
@@ -134,6 +133,98 @@
       win.appendChild(content);
       document.body.appendChild(win);
       makeDraggable(win, titlebar);
+
+      let locked = false;
+      let keyScreen = null;
+
+      function showKeyScreen() {
+        if (keyScreen) return;
+        keyScreen = document.createElement("div");
+        keyScreen.className = "tailweb-keyscreen";
+
+        const ksTitle = document.createElement("div");
+        ksTitle.textContent = title || "Tailweb";
+        ksTitle.style.cssText = `font-size: 15px; font-weight: 700; color: #fff; letter-spacing: 0.05em;`;
+
+        const ksDesc = document.createElement("div");
+        ksDesc.textContent = "Enter your key to continue.";
+        ksDesc.style.cssText = `font-size: 11px; color: #6b7280; text-align: center;`;
+
+        const ksInput = document.createElement("input");
+        ksInput.type = "text";
+        ksInput.placeholder = "Enter Key";
+        ksInput.style.cssText = `
+          background: ${accentHex}15; border: 1px solid ${accentHex}33;
+          border-radius: 5px; padding: 8px 12px; color: #fff; font-size: 12px;
+          font-family: inherit; outline: none; width: 100%; box-sizing: border-box;
+          transition: border-color 0.15s, background 0.15s;
+        `;
+        ksInput.addEventListener("focus", () => {
+          ksInput.style.borderColor = accentHex + "99";
+          ksInput.style.background = accentHex + "25";
+        });
+        ksInput.addEventListener("blur", () => {
+          ksInput.style.borderColor = accentHex + "33";
+          ksInput.style.background = accentHex + "15";
+        });
+
+        const ksError = document.createElement("div");
+        ksError.style.cssText = `font-size: 10px; color: #ef4444; min-height: 14px;`;
+
+        const ksBtns = document.createElement("div");
+        ksBtns.style.cssText = "display:flex;gap:8px;width:100%;";
+
+        function makeKsBtn(label, cb) {
+          const b = document.createElement("button");
+          b.textContent = label;
+          b.style.cssText = `
+            flex: 1; padding: 7px 10px; border-radius: 6px; border: 1px solid ${accentHex}33;
+            background: ${accentHex}18; color: #fff; font-size: 11px; font-weight: 500;
+            cursor: pointer; transition: background 0.15s, border-color 0.15s; font-family: inherit;
+          `;
+          b.addEventListener("mouseenter", () => { b.style.background = accentHex + "33"; b.style.borderColor = accentHex + "88"; });
+          b.addEventListener("mouseleave", () => { b.style.background = accentHex + "18"; b.style.borderColor = accentHex + "33"; });
+          b.addEventListener("click", cb);
+          return b;
+        }
+
+        const exitBtn = makeKsBtn("Exit", () => win.remove());
+        const getKeyBtn = makeKsBtn("Get Key", () => {
+          if (typeof getKey === "function") getKey();
+          else console.log("[Tailweb] No getKey callback provided.");
+        });
+        const submitBtn = makeKsBtn("Submit", () => {
+          const entered = ksInput.value.trim();
+          if (entered === requiredKey) {
+            keyScreen.remove();
+            keyScreen = null;
+            locked = false;
+          } else {
+            ksError.textContent = "Invalid key.";
+            ksInput.style.borderColor = "#ef444499";
+            setTimeout(() => {
+              ksError.textContent = "";
+              ksInput.style.borderColor = accentHex + "33";
+            }, 2000);
+          }
+        });
+
+        ksBtns.appendChild(exitBtn);
+        ksBtns.appendChild(getKeyBtn);
+        ksBtns.appendChild(submitBtn);
+
+        keyScreen.appendChild(ksTitle);
+        keyScreen.appendChild(ksDesc);
+        keyScreen.appendChild(ksInput);
+        keyScreen.appendChild(ksError);
+        keyScreen.appendChild(ksBtns);
+        win.appendChild(keyScreen);
+      }
+
+      if (requiredKey) {
+        locked = true;
+        showKeyScreen();
+      }
 
       console.log(`[Tailweb] Window "${title || "Tailweb"}" created.`);
 
@@ -215,6 +306,13 @@
 
           wrap.appendChild(input);
           content.appendChild(wrap);
+          return api;
+        },
+
+        Lock() {
+          if (locked) return api;
+          locked = true;
+          showKeyScreen();
           return api;
         },
 

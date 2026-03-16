@@ -6,7 +6,7 @@ A lightweight UI framework you can drop into any website via the browser console
 
 ## Quick Start
 
-Paste `tailweb.js` into DevTools console, thats it. You can't eval or anything it because of `Content Security Policy`.
+Paste `tailweb.js` into DevTools console, that's it. You can't eval or inject it via a bookmarklet because of `Content Security Policy`.
 
 Once loaded, `tailweb` is available on `window`.
 
@@ -21,7 +21,9 @@ Creates a draggable, resizable window. All elements are added to it.
 ```js
 const win = tailweb.Window({
   title,
-  tailwindAccentColor
+  tailwindAccentColor,
+  key,
+  getKey
 })
 ```
 
@@ -31,6 +33,8 @@ const win = tailweb.Window({
 |---|---|---|---|
 | `title` | `string` | `"Tailweb"` | Title shown in the window header |
 | `tailwindAccentColor` | `string` | `"gray-500"` | Accent color — Tailwind name or hex string |
+| `key` | `string` | — | If set, shows a key screen on load. Window is locked until the correct key is entered |
+| `getKey` | `function` | — | Called when the user clicks "Get Key" on the key screen |
 
 ### Supported accent color names
 
@@ -42,8 +46,10 @@ Or pass any hex string directly: `"#ff6b6b"`
 
 ```js
 const win = tailweb.Window({
-  title: "Dev Tools",
-  tailwindAccentColor: "cyan-500"
+  title: "My Hub",
+  tailwindAccentColor: "violet-500",
+  key: "mysecretkey123",
+  getKey: () => window.open("https://yoursite.com/getkey")
 })
 ```
 
@@ -194,6 +200,27 @@ win.Key({ key: "Escape" })
 
 ---
 
+## `win.Lock()`
+
+Re-shows the key screen, locking the window until the correct key is entered again. Does nothing if no `key` was set on the window or if already locked.
+
+### Syntax
+
+```js
+win.Lock()
+```
+
+### Example
+
+```js
+win.Button({
+  title: "Lock",
+  callback: () => win.Lock()
+})
+```
+
+---
+
 ## `win.Remove()`
 
 Destroys the window and all its elements. `tailweb` itself stays available.
@@ -212,6 +239,20 @@ win.Button({
   callback: () => win.Remove()
 })
 ```
+
+---
+
+## Key Screen
+
+When `key` is passed to `tailweb.Window()`, a key screen overlays the window on load. It has three buttons:
+
+| Button | Description |
+|---|---|
+| Exit | Removes the window entirely |
+| Get Key | Calls the `getKey` function you provided |
+| Submit | Validates the entered key — dismisses the screen if correct, flashes red if wrong |
+
+All key screen elements follow the window's accent color.
 
 ---
 
@@ -238,8 +279,10 @@ const nameRef = { __tailwebRef: { value: "" } }
 const emailRef = { __tailwebRef: { value: "" } }
 
 const win = tailweb.Window({
-  title: "User Form",
-  tailwindAccentColor: "teal-500"
+  title: "My Hub",
+  tailwindAccentColor: "cyan-500",
+  key: "letmein",
+  getKey: () => window.open("https://yoursite.com/getkey")
 })
 
 win.Label({ title: "Fill out the form below", size: 11 })
@@ -264,6 +307,11 @@ win.Button({
     console.log("Name:", nameRef.__tailwebRef.value)
     console.log("Email:", emailRef.__tailwebRef.value)
   }
+})
+
+win.Button({
+  title: "Lock",
+  callback: () => win.Lock()
 })
 
 win.Button({
