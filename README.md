@@ -6,7 +6,7 @@ A lightweight UI framework you can drop into any website via the browser console
 
 ## Quick Start
 
-Paste `tailweb.js` into DevTools console, thats it. You can't eval or anything it because of Content `Security Policy`
+Paste `tailweb.js` into DevTools console, thats it. You can't eval or anything it because of `Content Security Policy`.
 
 Once loaded, `tailweb` is available on `window`.
 
