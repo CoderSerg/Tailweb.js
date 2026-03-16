@@ -9,7 +9,7 @@ A lightweight UI framework you can drop into any website via the browser console
 Paste `tailweb.js` into DevTools console, or inject it remotely:
 
 ```js
-javascript:(function(){const s=document.createElement('script');s.src='https://your-host/tailweb.js';document.head.appendChild(s)})()
+javascript:(function(){const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/CoderSerg/Tailweb.js@main/Tailweb.js';document.head.appendChild(s)})()
 ```
 
 Once loaded, `tailweb` is available on `window`.
