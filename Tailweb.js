@@ -150,18 +150,18 @@
 
         const ksTitle = document.createElement("div");
         ksTitle.textContent = title || "Tailweb";
-        ksTitle.style.cssText = `font-size: 15px; font-weight: 700; color: #fff; letter-spacing: 0.05em;`;
+        ksTitle.style.cssText = `font-size: 17px; font-weight: 700; color: #fff; letter-spacing: 0.05em;`;
 
         const ksDesc = document.createElement("div");
         ksDesc.textContent = "Enter your key to continue.";
-        ksDesc.style.cssText = `font-size: 11px; color: #6b7280; text-align: center;`;
+        ksDesc.style.cssText = `font-size: 12px; color: #6b7280; text-align: center;`;
 
         const ksInput = document.createElement("input");
         ksInput.type = "text";
         ksInput.placeholder = "Enter Key";
         ksInput.style.cssText = `
           background: ${accentHex}15; border: 1px solid ${accentHex}33;
-          border-radius: 5px; padding: 8px 12px; color: #fff; font-size: 12px;
+          border-radius: 5px; padding: 9px 13px; color: #fff; font-size: 13px;
           font-family: inherit; outline: none; width: 100%; box-sizing: border-box;
           transition: border-color 0.15s, background 0.15s;
         `;
@@ -175,7 +175,7 @@
         });
 
         const ksError = document.createElement("div");
-        ksError.style.cssText = `font-size: 10px; color: #ef4444; min-height: 14px;`;
+        ksError.style.cssText = `font-size: 11px; color: #ef4444; min-height: 14px;`;
 
         const ksBtns = document.createElement("div");
         ksBtns.style.cssText = "display:flex;gap:8px;width:100%;";
@@ -184,8 +184,8 @@
           const b = document.createElement("button");
           b.textContent = label;
           b.style.cssText = `
-            flex: 1; padding: 7px 10px; border-radius: 6px; border: 1px solid ${accentHex}33;
-            background: ${accentHex}18; color: #fff; font-size: 11px; font-weight: 500;
+            flex: 1; padding: 8px 11px; border-radius: 6px; border: 1px solid ${accentHex}33;
+            background: ${accentHex}18; color: #fff; font-size: 12px; font-weight: 500;
             cursor: pointer; transition: background 0.15s, border-color 0.15s; font-family: inherit;
           `;
           b.addEventListener("mouseenter", () => { b.style.background = accentHex + "33"; b.style.borderColor = accentHex + "88"; });
@@ -238,8 +238,8 @@
         Button({ title: btnTitle, callback, icon, iconColor } = {}) {
           const btn = document.createElement("button");
           btn.style.cssText = `
-            padding: 6px 14px; border-radius: 6px; border: 1px solid ${accentHex}33;
-            background: ${accentHex}18; color: #fff; font-size: 12px; font-weight: 500;
+            padding: 7px 15px; border-radius: 6px; border: 1px solid ${accentHex}33;
+            background: ${accentHex}18; color: #fff; font-size: 13px; font-weight: 500;
             cursor: pointer; transition: background 0.15s, border-color 0.15s;
             font-family: inherit; width: fit-content; text-align: left; letter-spacing: 0.02em;
             display: flex; align-items: center; gap: 6px;
@@ -253,14 +253,14 @@
             };
             const resolvedColor = iconColorMap[iconColor] || iconColor || "#ffffff";
             const iconWrap = document.createElement("span");
-            iconWrap.style.cssText = "display:flex;align-items:center;width:12px;height:12px;flex-shrink:0;";
+            iconWrap.style.cssText = "display:flex;align-items:center;width:13px;height:13px;flex-shrink:0;";
             fetch(`https://unpkg.com/lucide-static@latest/icons/${icon}.svg`)
               .then(r => r.text())
               .then(svg => {
                 iconWrap.innerHTML = svg;
                 const s = iconWrap.querySelector("svg");
                 if (s) {
-                  s.style.cssText = `width:12px;height:12px;stroke:${resolvedColor};fill:none;`;
+                  s.style.cssText = `width:13px;height:13px;stroke:${resolvedColor};fill:none;`;
                 }
               });
             btn.appendChild(iconWrap);
@@ -282,7 +282,7 @@
 
         Label({ title: labelTitle, size, icon, iconColor } = {}) {
           const el = document.createElement("div");
-          const px = size ? `${size}px` : "10px";
+          const px = size ? `${size}px` : "11px";
           el.style.cssText = `font-size: ${px}; color: #d1d5db; line-height: 1.5; padding: 1px 0; display:flex; align-items:center; gap:6px;`;
           if (icon) {
             const iconColorMap = {
@@ -317,7 +317,7 @@
           if (tbTitle) {
             const lbl = document.createElement("label");
             lbl.textContent = tbTitle;
-            lbl.style.cssText = "font-size: 10px; color: #9ca3af; letter-spacing: 0.04em;";
+            lbl.style.cssText = "font-size: 11px; color: #9ca3af; letter-spacing: 0.04em;";
             wrap.appendChild(lbl);
           }
 
@@ -327,8 +327,8 @@
           input.value = value !== undefined ? value : "";
           input.style.cssText = `
             background: ${accentHex}15; border: 1px solid ${accentHex}33;
-            border-radius: 5px; padding: 5px 9px; color: #fff; font-size: 12px;
-            font-family: inherit; outline: none; width: 172px; box-sizing: border-box;
+            border-radius: 5px; padding: 6px 10px; color: #fff; font-size: 13px;
+            font-family: inherit; outline: none; width: 189px; box-sizing: border-box;
             transition: border-color 0.15s, background 0.15s;
           `;
           input.addEventListener("focus", () => {
