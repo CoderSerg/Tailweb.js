@@ -393,6 +393,113 @@
     },
   };
 
+  tailweb.Popup = function({ title, description, icon, button1, button2, button3, cbutton1, cbutton2, cbutton3 } = {}) {
+    const accentMap = {
+      "gray-500": "#6b7280", "blue-500": "#3b82f6", "red-500": "#ef4444",
+      "green-500": "#22c55e", "purple-500": "#a855f7", "yellow-500": "#eab308",
+      "pink-500": "#ec4899", "orange-500": "#f97316", "cyan-500": "#06b6d4",
+      "indigo-500": "#6366f1", "teal-500": "#14b8a6", "violet-500": "#8b5cf6",
+    };
+
+    const windows = document.querySelectorAll('.tailweb-window');
+    let accentHex = "#6b7280";
+    if (windows.length > 0) {
+      const randomWin = windows[Math.floor(Math.random() * windows.length)];
+      const titleEl = randomWin.querySelector('span');
+      if (titleEl) {
+        const col = titleEl.style.color;
+        const hex = Object.values(accentMap).find(h => {
+          const r = parseInt(h.slice(1,3),16), g = parseInt(h.slice(3,5),16), b = parseInt(h.slice(5,7),16);
+          return col === `rgb(${r}, ${g}, ${b})`;
+        });
+        if (hex) accentHex = hex;
+        else if (col) accentHex = col;
+      }
+    }
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px);';
+
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+      background:#111;border:1px solid rgba(255,255,255,0.08);border-radius:16px;
+      padding:28px 28px 22px;max-width:420px;width:90%;
+      font-family:ui-monospace,'Cascadia Code','Source Code Pro',monospace;
+      color:#fff;box-shadow:0 32px 64px -12px rgba(0,0,0,0.9);
+    `;
+
+    const close = () => overlay.remove();
+
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;gap:10px;margin-bottom:14px;';
+
+    const titleEl = document.createElement('div');
+    titleEl.textContent = title || '';
+    titleEl.style.cssText = 'font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.01em;';
+    header.appendChild(titleEl);
+    popup.appendChild(header);
+
+    if (description) {
+      const desc = document.createElement('div');
+      desc.textContent = description;
+      desc.style.cssText = 'font-size:13px;color:#71717a;line-height:1.6;margin-bottom:24px;';
+      popup.appendChild(desc);
+    } else {
+      popup.style.paddingBottom = '22px';
+    }
+
+    const btnRow = document.createElement('div');
+    btnRow.style.cssText = 'display:flex;gap:8px;justify-content:flex-end;margin-top:20px;';
+
+    function makeBtn(label, cb, isPrimary, withIcon) {
+      const b = document.createElement('button');
+      b.style.cssText = `
+        padding:8px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;
+        font-family:inherit;transition:background 0.15s,border-color 0.15s;
+        display:flex;align-items:center;gap:7px;
+        border:1px solid ${isPrimary ? accentHex + '55' : 'rgba(255,255,255,0.1)'};
+        background:${isPrimary ? accentHex + '22' : 'rgba(255,255,255,0.05)'};
+        color:#fff;
+      `;
+      b.addEventListener('mouseenter', () => {
+        b.style.background = isPrimary ? accentHex + '33' : 'rgba(255,255,255,0.1)';
+        b.style.borderColor = isPrimary ? accentHex + '88' : 'rgba(255,255,255,0.2)';
+      });
+      b.addEventListener('mouseleave', () => {
+        b.style.background = isPrimary ? accentHex + '22' : 'rgba(255,255,255,0.05)';
+        b.style.borderColor = isPrimary ? accentHex + '55' : 'rgba(255,255,255,0.1)';
+      });
+      if (withIcon) {
+        const iconWrap = document.createElement('span');
+        iconWrap.style.cssText = 'display:flex;align-items:center;width:13px;height:13px;flex-shrink:0;';
+        fetch(`https://unpkg.com/lucide-static@latest/icons/${withIcon}.svg`)
+          .then(r => r.text())
+          .then(svg => {
+            iconWrap.innerHTML = svg;
+            const s = iconWrap.querySelector('svg');
+            if (s) s.style.cssText = 'width:13px;height:13px;stroke:#fff;fill:none;';
+          });
+        b.appendChild(iconWrap);
+      }
+      b.appendChild(document.createTextNode(label));
+      b.addEventListener('click', () => { close(); if (typeof cb === 'function') cb(); });
+      return b;
+    }
+
+    const hasBtn2 = !!button2;
+    const hasBtn3 = !!button3;
+    const autoCancel = button1 && !hasBtn2 && !hasBtn3;
+
+    if (hasBtn3) btnRow.appendChild(makeBtn(button3, cbutton3, false, null));
+    if (hasBtn2) btnRow.appendChild(makeBtn(button2, cbutton2, false, null));
+    else if (autoCancel) btnRow.appendChild(makeBtn('Cancel', null, false, null));
+    if (button1) btnRow.appendChild(makeBtn(button1, cbutton1, true, icon || null));
+
+    popup.appendChild(btnRow);
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+  };
+
   global.tailweb = tailweb;
   console.log("[Tailweb] Loaded. Use tailweb.Window({...}) to get started.");
 })(window);
