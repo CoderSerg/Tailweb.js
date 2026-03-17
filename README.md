@@ -1,48 +1,31 @@
 # Tailweb
 
-A lightweight UI framework you can drop into any website via the browser console or a bookmarklet. Loads Tailwind CSS automatically — no build step, no setup.
+A lightweight UI framework you can drop into any website via the DevTools console. Loads Tailwind CSS automatically — no setup needed.
 
 ---
 
 ## Quick Start
 
-Paste `tailweb.js` into DevTools console, that's it. You can't eval or inject it via a bookmarklet because of `Content Security Policy`.
+Paste `tailweb.js` into the DevTools console. Can't use bookmarklets due to `Content Security Policy`.
 
 Once loaded, `tailweb` is available on `window`.
 
 ---
 
-## `tailweb.Window(options)`
+## Window
 
-Creates a draggable, resizable window. All elements are added to it.
-
-### Syntax
+Creates a draggable, resizable window. Everything else goes inside it.
 
 ```js
 const win = tailweb.Window({
-  title,
-  tailwindAccentColor,
-  key,
-  getKey
+  title,                  // string
+  tailwindAccentColor,    // || string, default: "gray-500"
+  key,                    // || string, locks window behind a key screen
+  getKey                  // || function, called when "Get Key" is clicked
 })
 ```
 
-### Properties
-
-| Property | Type | Default | Description |
-|---|---|---|---|
-| `title` | `string` | `"Tailweb"` | Title shown in the window header |
-| || `tailwindAccentColor` | `string` | `"gray-500"` | Accent color — Tailwind name or hex string |
-| || `key` | `string` | — | If set, shows a key screen on load. Window is locked until the correct key is entered |
-| || `getKey` | `function` | — | Called when the user clicks "Get Key" on the key screen |
-
-### Supported accent color names
-
-`gray-500` `blue-500` `red-500` `green-500` `purple-500` `yellow-500` `pink-500` `orange-500` `cyan-500` `indigo-500` `teal-500` `violet-500`
-
-Or pass any hex string directly: `"#ff6b6b"`
-
-### Example
+**Accent colors:** `gray-500` `blue-500` `red-500` `green-500` `purple-500` `yellow-500` `pink-500` `orange-500` `cyan-500` `indigo-500` `teal-500` `violet-500` or any hex like `"#ff6b6b"`
 
 ```js
 const win = tailweb.Window({
@@ -55,204 +38,143 @@ const win = tailweb.Window({
 
 ---
 
-## `win.Button(options)`
-
-Adds a clickable button to the window.
-
-### Syntax
+## Button
 
 ```js
 win.Button({
-  title,
-  callback,
-  icon,
-  iconColor
+  title,       // string
+  callback,    // || function
+  icon,        // || string, Lucide icon name e.g. "trash-2"
+  iconColor    // || string, Tailwind name or hex, default: white
 })
 ```
 
-### Properties
-
-| Property | Type | Default | Description |
-|---|---|---|---|
-| `title` | `string` | `"Button"` | Text displayed on the button |
-| || `callback` | `function` | — | Function called when button is clicked |
-| || `icon` | `string` | — | Any valid [Lucide](https://lucide.dev/icons/) icon name e.g. `"trash-2"` |
-| || `iconColor` | `string` | `"#ffffff"` | Icon color — Tailwind name or hex string. Defaults to white |
-
-### Example
-
 ```js
-win.Button({
-  title: "Say Hello",
-  callback: () => console.log("hello")
-})
-
-win.Button({
-  title: "Delete",
-  icon: "trash-2",
-  iconColor: "red-500",
-  callback: () => console.log("deleted")
-})
+win.Button({ title: "Save", icon: "save", callback: () => console.log("saved") })
+win.Button({ title: "Delete", icon: "trash-2", iconColor: "red-500", callback: () => {} })
 ```
 
 ---
 
-## `win.Label(options)`
-
-Adds a static text label to the window.
-
-### Syntax
+## Label
 
 ```js
 win.Label({
-  title,
-  size,
-  icon,
-  iconColor
+  title,       // string
+  size,        // || number, font size in px, default: 11
+  icon,        // || string, Lucide icon name
+  iconColor    // || string, Tailwind name or hex, default: white
 })
 ```
 
-### Properties
-
-| Property | Type | Default | Description |
-|---|---|---|---|
-| `title` | `string` | `""` | Text content of the label |
-| || `size` | `number` | `10` | Font size in pixels |
-| || `icon` | `string` | — | Any valid [Lucide](https://lucide.dev/icons/) icon name e.g. `"settings"` |
-| || `iconColor` | `string` | `"#ffffff"` | Icon color — Tailwind name or hex string. Defaults to white |
-
-### Example
-
 ```js
-win.Label({ title: "Current session info", size: 13 })
+win.Label({ title: "Info", size: 13 })
 win.Label({ title: "Settings", icon: "settings", size: 12 })
-win.Label({ title: "Warning", icon: "triangle-alert", iconColor: "yellow-500", size: 11 })
+win.Label({ title: "Warning", icon: "triangle-alert", iconColor: "yellow-500" })
 ```
 
 ---
 
-## `win.TextBox(options)`
-
-Adds a text input to the window. Can bind to a ref object and update it live or on blur.
-
-### Syntax
+## TextBox
 
 ```js
 win.TextBox({
-  title,
-  placeholder,
-  variable,
-  value,
-  updateBlur
+  title,        // string
+  placeholder,  // || string
+  variable,     // || ref object (see below)
+  value,        // || string, default value
+  updateBlur    // || boolean, false = live update, true = update on blur
 })
 ```
 
-### Properties
-
-| Property | Type | Default | Description |
-|---|---|---|---|
-| `title` | `string` | — | Small label shown above the input |
-| || `placeholder` | `string` | `""` | Placeholder text inside the input |
-| || `variable` | `ref object` | — | Ref object to bind the value to (see below) |
-| || `value` | `string` | `""` | Default value pre-filled in the input |
-| || `updateBlur` | `boolean` | `false` | `false` = updates on every keystroke, `true` = updates only on blur |
-
-### Variable binding
-
-JS primitives can't be passed by reference, so use a ref object:
+**Variable binding** — JS primitives can't be passed by reference, use a ref object:
 
 ```js
 const myVar = { __tailwebRef: { value: "" } }
 
-win.TextBox({
-  title: "Username",
-  variable: myVar,
-  updateBlur: false
-})
+win.TextBox({ title: "Name", variable: myVar })
 
-// Access the current value:
-console.log(myVar.__tailwebRef.value)
-```
-
-### Example
-
-```js
-const query = { __tailwebRef: { value: "" } }
-
-win.TextBox({
-  title: "Search",
-  placeholder: "Type to search...",
-  variable: query,
-  value: "default text",
-  updateBlur: true
-})
+console.log(myVar.__tailwebRef.value) // read the current value
 ```
 
 ---
 
-## `win.Key(options)`
+## Key
 
 Binds a keyboard key to toggle the window's visibility.
 
-### Syntax
-
 ```js
-win.Key({ key })
+win.Key({ key }) // any KeyboardEvent.key value
 ```
-
-### Properties
-
-| Property | Type | Description |
-|---|---|---|
-| `key` | `string` | Any valid [`KeyboardEvent.key`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values) value |
-
-### Example
 
 ```js
 win.Key({ key: "F2" })
 win.Key({ key: "`" })
-win.Key({ key: "Escape" })
 ```
 
 ---
 
-## `win.Lock()`
+## Lock
 
-Re-shows the key screen, locking the window until the correct key is entered again. Does nothing if no key system was set up on the window or if already locked.
-
-### Syntax
+Re-locks the window and shows the key screen again. Does nothing if no `key` was set or already locked.
 
 ```js
 win.Lock()
 ```
 
-### Example
-
-```js
-win.Button({
-  title: "Lock",
-  callback: () => win.Lock()
-})
-```
-
 ---
 
-## `win.Remove()`
+## Remove
 
-Destroys the window and all its elements. `tailweb` itself stays available.
-
-### Syntax
+Destroys the window. `tailweb` itself stays available.
 
 ```js
 win.Remove()
 ```
 
-### Example
+---
+
+## Popup
+
+Shows a centered modal with a dark overlay. Accent color is pulled from a random existing window.
 
 ```js
-win.Button({
-  title: "Close Window",
-  callback: () => win.Remove()
+tailweb.Popup({
+  title,        // string
+  description,  // || string
+  icon,         // || string, Lucide icon on button1
+  button1,      // string, primary button
+  button2,      // || string, if omitted auto-adds a "Cancel" button
+  button3,      // || string
+  cbutton1,     // || function
+  cbutton2,     // || function
+  cbutton3      // || function
+})
+```
+
+- Buttons render right-to-left: `button3`, `button2`/Cancel, `button1`
+- `button1` is the primary (accent-tinted) button
+- If only `button1` is set, a "Cancel" button is added automatically that closes the popup
+- `cbutton` callbacks only fire if their corresponding button is defined
+
+```js
+// Simple confirm
+tailweb.Popup({
+  title: "Are you sure?",
+  description: "This can't be undone.",
+  button1: "Continue",
+  icon: "arrow-right",
+  cbutton1: () => console.log("confirmed")
+})
+
+// Three buttons
+tailweb.Popup({
+  title: "Save changes?",
+  button1: "Save",
+  button2: "Discard",
+  button3: "Cancel",
+  cbutton1: () => console.log("saved"),
+  cbutton2: () => console.log("discarded")
 })
 ```
 
@@ -260,40 +182,31 @@ win.Button({
 
 ## Key Screen
 
-When `key` is passed to `tailweb.Window()`, a key screen overlays the window on load. It has three buttons:
+When `key` is set on a window, a key screen overlays it on load.
 
 | Button | Description |
 |---|---|
-| Exit | Removes the window entirely |
-| Get Key | Only shown if `getKey` is provided. Calls the function you passed |
-| Submit | Validates the entered key — dismisses the screen if correct, flashes red if wrong |
-
-All key screen elements follow the window's accent color.
+| Exit | Removes the window |
+| Get Key | Only shown if `getKey` is provided |
+| Submit | Correct key dismisses screen, wrong key flashes red |
 
 ---
 
 ## Icons
 
-`Button` and `Label` support icons via the [Lucide](https://lucide.dev/icons/) icon library, fetched automatically — no extra setup needed.
-
-- Icons render to the left of the text
-- Size matches the element's font size
-- Default color is white unless `iconColor` is set
-- `iconColor` accepts the same Tailwind names or hex strings as `tailwindAccentColor`
+`Button`, `Label`, and `Popup` (`button1` only) support [Lucide](https://lucide.dev/icons/) icons — fetched automatically, no setup needed. Icons appear to the left of text and match the element's font size.
 
 ---
 
 ## Chaining
 
-All element methods return the window instance, so you can chain:
+All element methods return the window so you can chain:
 
 ```js
-const win = tailweb.Window({ title: "Toolbox", tailwindAccentColor: "violet-500" })
-
-win
-  .Label({ title: "Config", icon: "settings", size: 12 })
-  .TextBox({ title: "API Key", placeholder: "sk-...", updateBlur: true })
-  .Button({ title: "Submit", icon: "check", callback: () => console.log("submitted") })
+tailweb.Window({ title: "Toolbox", tailwindAccentColor: "violet-500" })
+  .Label({ title: "Config", icon: "settings" })
+  .TextBox({ title: "API Key", placeholder: "sk-..." })
+  .Button({ title: "Submit", icon: "check", callback: () => {} })
   .Key({ key: "F1" })
 ```
 
@@ -303,7 +216,6 @@ win
 
 ```js
 const nameRef = { __tailwebRef: { value: "" } }
-const emailRef = { __tailwebRef: { value: "" } }
 
 const win = tailweb.Window({
   title: "My Hub",
@@ -312,43 +224,20 @@ const win = tailweb.Window({
   getKey: () => window.open("https://yoursite.com/getkey")
 })
 
-win.Label({ title: "Fill out the form below", icon: "clipboard", size: 11 })
-
-win.TextBox({
-  title: "Name",
-  placeholder: "John Doe",
-  variable: nameRef,
-  updateBlur: false
-})
-
-win.TextBox({
-  title: "Email",
-  placeholder: "john@example.com",
-  variable: emailRef,
-  updateBlur: true
-})
-
+win.Label({ title: "Enter your info", icon: "clipboard", size: 11 })
+win.TextBox({ title: "Name", placeholder: "John Doe", variable: nameRef })
 win.Button({
   title: "Submit",
   icon: "check",
   callback: () => {
-    console.log("Name:", nameRef.__tailwebRef.value)
-    console.log("Email:", emailRef.__tailwebRef.value)
+    tailweb.Popup({
+      title: "Submitted!",
+      description: "Name: " + nameRef.__tailwebRef.value,
+      button1: "OK",
+      cbutton1: () => win.Remove()
+    })
   }
 })
-
-win.Button({
-  title: "Lock",
-  icon: "lock",
-  callback: () => win.Lock()
-})
-
-win.Button({
-  title: "Close",
-  icon: "x",
-  iconColor: "red-500",
-  callback: () => win.Remove()
-})
-
+win.Button({ title: "Lock", icon: "lock", callback: () => win.Lock() })
 win.Key({ key: "F2" })
 ```
