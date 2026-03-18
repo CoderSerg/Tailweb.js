@@ -369,6 +369,47 @@
           return api;
         },
 
+        Toggle({ title: togTitle, value: togValue, callback: togCallback } = {}) {
+          const wrap = document.createElement('div');
+          wrap.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;';
+
+          const lbl = document.createElement('div');
+          lbl.textContent = togTitle || '';
+          lbl.style.cssText = 'font-size:13px;color:#d1d5db;';
+
+          let state = togValue === true;
+
+          const track = document.createElement('div');
+          track.style.cssText = `
+            width:36px;height:20px;border-radius:999px;flex-shrink:0;cursor:pointer;
+            background:${state ? accentHex + 'cc' : 'rgba(255,255,255,0.12)'};
+            border:1px solid ${state ? accentHex : 'rgba(255,255,255,0.15)'};
+            position:relative;transition:background 0.2s,border-color 0.2s;
+          `;
+
+          const thumb = document.createElement('div');
+          thumb.style.cssText = `
+            width:14px;height:14px;border-radius:50%;background:#fff;
+            position:absolute;top:2px;
+            left:${state ? '18px' : '2px'};
+            transition:left 0.2s;
+          `;
+          track.appendChild(thumb);
+
+          track.addEventListener('click', () => {
+            state = !state;
+            track.style.background = state ? accentHex + 'cc' : 'rgba(255,255,255,0.12)';
+            track.style.borderColor = state ? accentHex : 'rgba(255,255,255,0.15)';
+            thumb.style.left = state ? '18px' : '2px';
+            if (typeof togCallback === 'function') togCallback(state);
+          });
+
+          wrap.appendChild(lbl);
+          wrap.appendChild(track);
+          content.appendChild(wrap);
+          return api;
+        },
+
         Divider() {
           const hr = document.createElement('div');
           hr.style.cssText = `height:1px;background:rgba(255,255,255,0.08);margin:2px 0;`;

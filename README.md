@@ -253,6 +253,55 @@ tailweb.Notify({
 
 ---
 
+## Toggle
+
+Adds an on/off switch to the window. Fires the callback with `true` or `false` every time it's flipped.
+
+```js
+win.Toggle({
+  title,
+  value,
+  callback
+})
+```
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `title` | string | — | Label shown next to the toggle |
+| `value` | boolean | `false` | Initial state — optional |
+| `callback` | function | — | Called with `true`/`false` when flipped — optional |
+
+```js
+win.Toggle({
+  title: "Enable feature",
+  value: false,
+  callback: (state) => console.log("on:", state)
+})
+
+// passing a named function — no parentheses
+function onToggle(state) { console.log(state) }
+win.Toggle({ title: "Toggle", callback: onToggle })
+```
+
+---
+
+## Divider
+
+Adds a horizontal separator line between elements.
+
+```js
+win.Divider()
+```
+
+```js
+win.Label({ title: "Section A" })
+win.Button({ title: "Do thing" })
+win.Divider()
+win.Label({ title: "Section B" })
+```
+
+---
+
 ## Key Screen
 
 When `key` is set on a window, a key screen overlays it on load.
