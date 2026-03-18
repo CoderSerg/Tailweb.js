@@ -204,7 +204,7 @@
         });
         const submitBtn = makeKsBtn("Submit", () => {
           const entered = ksInput.value.trim();
-          if (entered === requiredKey) {
+          if (validKeys && validKeys.includes(entered)) {
             keyScreen.remove();
             keyScreen = null;
             locked = false;
@@ -230,7 +230,9 @@
         win.appendChild(keyScreen);
       }
 
-      if (requiredKey) {
+      const validKeys = Array.isArray(requiredKey) ? requiredKey : (requiredKey ? [requiredKey] : null);
+
+      if (validKeys) {
         locked = true;
         showKeyScreen();
       }
@@ -363,7 +365,7 @@
         },
 
         Lock() {
-          if (!requiredKey || locked) return api;
+          if (!validKeys || locked) return api;
           locked = true;
           showKeyScreen();
           return api;

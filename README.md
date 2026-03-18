@@ -29,7 +29,7 @@ const win = tailweb.Window({
 |---|---|---|---|
 | `title` | string | `"Tailweb"` | Title shown in the window header |
 | `tailwindAccentColor` | string | `"gray-500"` | Accent color — Tailwind name or hex string — optional|
-| `key` | string | — | Locks window behind a key screen on load — optional|
+| `key` | string or array | — | Locks window behind a key screen on load. Pass a string or `["key1", "key2"]` for multiple valid keys — optional|
 | `getKey` | function | — | Called when "Get Key" is clicked on the key screen — optional|
 
 **Accent colors:** `gray-500` `blue-500` `red-500` `green-500` `purple-500` `yellow-500` `pink-500` `orange-500` `cyan-500` `indigo-500` `teal-500` `violet-500` or any hex like `"#ff6b6b"`
