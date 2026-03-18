@@ -18,12 +18,19 @@ Creates a draggable, resizable window. Everything else goes inside it.
 
 ```js
 const win = tailweb.Window({
-  title,                  // string
-  tailwindAccentColor,    // || string, default: "gray-500"
-  key,                    // || string, locks window behind a key screen
-  getKey                  // || function, called when "Get Key" is clicked
+  title,
+  tailwindAccentColor,
+  key,
+  getKey
 })
 ```
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `title` | string | `"Tailweb"` | Title shown in the window header |
+| `tailwindAccentColor` | string | `"gray-500"` | Accent color — Tailwind name or hex string — optional|
+| `key` | string | — | Locks window behind a key screen on load — optional|
+| `getKey` | function | — | Called when "Get Key" is clicked on the key screen — optional|
 
 **Accent colors:** `gray-500` `blue-500` `red-500` `green-500` `purple-500` `yellow-500` `pink-500` `orange-500` `cyan-500` `indigo-500` `teal-500` `violet-500` or any hex like `"#ff6b6b"`
 
@@ -42,12 +49,19 @@ const win = tailweb.Window({
 
 ```js
 win.Button({
-  title,       // string
-  callback,    // || function
-  icon,        // || string, Lucide icon name e.g. "trash-2"
-  iconColor    // || string, Tailwind name or hex, default: white
+  title,
+  callback,
+  icon,
+  iconColor
 })
 ```
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `title` | string | `"Button"` | Text on the button |
+| `callback` | function | — | Called when clicked — optional|
+| `icon` | string | — | Lucide icon name e.g. `"trash-2"` — optional|
+| `iconColor` | string | `"#ffffff"` | Icon color — Tailwind name or hex — optional|
 
 ```js
 win.Button({ title: "Save", icon: "save", callback: () => console.log("saved") })
@@ -60,12 +74,19 @@ win.Button({ title: "Delete", icon: "trash-2", iconColor: "red-500", callback: (
 
 ```js
 win.Label({
-  title,       // string
-  size,        // || number, font size in px, default: 11
-  icon,        // || string, Lucide icon name
-  iconColor    // || string, Tailwind name or hex, default: white
+  title,
+  size,
+  icon,
+  iconColor
 })
 ```
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `title` | string | `""` | Text content |
+| `size` | number | `11` | Font size in px — optional|
+| `icon` | string | — | Lucide icon name — optional|
+| `iconColor` | string | `"#ffffff"` | Icon color — Tailwind name or hex — optional|
 
 ```js
 win.Label({ title: "Info", size: 13 })
@@ -79,13 +100,21 @@ win.Label({ title: "Warning", icon: "triangle-alert", iconColor: "yellow-500" })
 
 ```js
 win.TextBox({
-  title,        // string
-  placeholder,  // || string
-  variable,     // || ref object (see below)
-  value,        // || string, default value
-  updateBlur    // || boolean, false = live update, true = update on blur
+  title,
+  placeholder,
+  variable,
+  value,
+  updateBlur
 })
 ```
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `title` | string | — | Label shown above the input |
+| `placeholder` | string | `""` | Placeholder text — optional|
+| `variable` | ref object | — | Ref object to bind value to — optional|
+| `value` | string | `""` | Default pre-filled value — optional|
+| `updateBlur` | boolean | `false` | `false` = live update, `true` = update on blur — optional|
 
 **Variable binding** — JS primitives can't be passed by reference, use a ref object:
 
@@ -104,8 +133,12 @@ console.log(myVar.__tailwebRef.value) // read the current value
 Binds a keyboard key to toggle the window's visibility.
 
 ```js
-win.Key({ key }) // any KeyboardEvent.key value
+win.Key({ key })
 ```
+
+| Property | Type | Description |
+|---|---|---|
+| `key` | string | Any valid [KeyboardEvent.key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values) value |
 
 ```js
 win.Key({ key: "F2" })
@@ -140,22 +173,31 @@ Shows a centered modal with a dark overlay. Accent color is pulled from a random
 
 ```js
 tailweb.Popup({
-  title,        // string
-  description,  // || string
-  icon,         // || string, Lucide icon on button1
-  button1,      // string, primary button
-  button2,      // || string, if omitted auto-adds a "Cancel" button
-  button3,      // || string
-  cbutton1,     // || function
-  cbutton2,     // || function
-  cbutton3      // || function
+  title,
+  description,
+  icon,
+  button1,
+  button2,
+  button3,
+  cbutton1,
+  cbutton2,
+  cbutton3
 })
 ```
 
-- Buttons render right-to-left: `button3`, `button2`/Cancel, `button1`
-- `button1` is the primary (accent-tinted) button
-- If only `button1` is set, a "Cancel" button is added automatically that closes the popup
-- `cbutton` callbacks only fire if their corresponding button is defined
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `title` | string | — | Popup title |
+| `description` | string | — | Body text below the title — optional|
+| `icon` | string | — | Lucide icon shown on `button1` — optional|
+| `button1` | string | — | Primary button (accent-tinted) |
+| `button2` | string | `"Cancel"` | If omitted, auto-adds a Cancel button that closes the popup — optional|
+| `button3` | string | — | Third button — optional|
+| `cbutton1` | function | — | Called when `button1` is clicked — optional|
+| `cbutton2` | function | — | Called when `button2` is clicked — optional|
+| `cbutton3` | function | — | Called when `button3` is clicked — optional|
+
+Buttons render right-to-left: `button3`, `button2`/Cancel, `button1`.
 
 ```js
 // Simple confirm
@@ -180,6 +222,37 @@ tailweb.Popup({
 
 ---
 
+## Notify
+
+Shows a toast notification in the bottom right. Accent color is pulled from a random existing window. The progress bar at the bottom shrinks right to left over the duration.
+
+```js
+tailweb.Notify({
+  title,
+  description,
+  icon,
+  time
+})
+```
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `title` | string | — | Notification title |
+| `description` | string | — | Body text below the title — optional|
+| `icon` | string | — | Lucide icon name, shown at 32px — optional|
+| `time` | number | `3` | Seconds before auto-dismiss — optional|
+
+```js
+tailweb.Notify({
+  title: "Saved",
+  description: "Your changes were saved.",
+  icon: "check-circle",
+  time: 4
+})
+```
+
+---
+
 ## Key Screen
 
 When `key` is set on a window, a key screen overlays it on load.
@@ -194,7 +267,7 @@ When `key` is set on a window, a key screen overlays it on load.
 
 ## Icons
 
-`Button`, `Label`, and `Popup` (`button1` only) support [Lucide](https://lucide.dev/icons/) icons — fetched automatically, no setup needed. Icons appear to the left of text and match the element's font size.
+`Button`, `Label`, `Popup` (`button1` only), and `Notify` support [Lucide](https://lucide.dev/icons/) icons — fetched automatically, no setup needed. Icons appear to the left of text and match the element's font size.
 
 ---
 
@@ -234,7 +307,10 @@ win.Button({
       title: "Submitted!",
       description: "Name: " + nameRef.__tailwebRef.value,
       button1: "OK",
-      cbutton1: () => win.Remove()
+      cbutton1: () => {
+        win.Remove()
+        tailweb.Notify({ title: "Done", icon: "check-circle", time: 2 })
+      }
     })
   }
 })

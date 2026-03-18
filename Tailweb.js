@@ -369,6 +369,13 @@
           return api;
         },
 
+        Divider() {
+          const hr = document.createElement('div');
+          hr.style.cssText = `height:1px;background:rgba(255,255,255,0.08);margin:2px 0;`;
+          content.appendChild(hr);
+          return api;
+        },
+
         Remove() {
           win.remove();
         },
@@ -498,6 +505,106 @@
     popup.appendChild(btnRow);
     overlay.appendChild(popup);
     document.body.appendChild(overlay);
+  };
+
+  tailweb.Notify = function({ title, description, icon, time } = {}) {
+    const accentMap = {
+      "gray-500": "#6b7280", "blue-500": "#3b82f6", "red-500": "#ef4444",
+      "green-500": "#22c55e", "purple-500": "#a855f7", "yellow-500": "#eab308",
+      "pink-500": "#ec4899", "orange-500": "#f97316", "cyan-500": "#06b6d4",
+      "indigo-500": "#6366f1", "teal-500": "#14b8a6", "violet-500": "#8b5cf6",
+    };
+
+    const windows = document.querySelectorAll('.tailweb-window');
+    let accentHex = "#6b7280";
+    if (windows.length > 0) {
+      const randomWin = windows[Math.floor(Math.random() * windows.length)];
+      const titleEl = randomWin.querySelector('span');
+      if (titleEl) {
+        const col = titleEl.style.color;
+        const hex = Object.values(accentMap).find(h => {
+          const r = parseInt(h.slice(1,3),16), g = parseInt(h.slice(3,5),16), b = parseInt(h.slice(5,7),16);
+          return col === `rgb(${r}, ${g}, ${b})`;
+        });
+        if (hex) accentHex = hex;
+        else if (col) accentHex = col;
+      }
+    }
+
+    const duration = typeof time === 'number' ? time : 3;
+
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed; bottom: 24px; right: 24px; z-index: 2147483647;
+      background: #111; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 16px 18px 0;
+      font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+      color: #fff; min-width: 280px; max-width: 360px;
+      box-shadow: 0 16px 40px -8px rgba(0,0,0,0.8);
+      overflow: hidden;
+      opacity: 0; transform: translateY(12px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    `;
+
+    const body = document.createElement('div');
+    body.style.cssText = 'display:flex;align-items:flex-start;gap:14px;padding-bottom:14px;';
+
+    if (icon) {
+      const iconWrap = document.createElement('div');
+      iconWrap.style.cssText = 'width:32px;height:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:2px;';
+      fetch(`https://unpkg.com/lucide-static@latest/icons/${icon}.svg`)
+        .then(r => r.text())
+        .then(svg => {
+          iconWrap.innerHTML = svg;
+          const s = iconWrap.querySelector('svg');
+          if (s) s.style.cssText = `width:32px;height:32px;stroke:${accentHex};fill:none;`;
+        });
+      body.appendChild(iconWrap);
+    }
+
+    const textWrap = document.createElement('div');
+    textWrap.style.cssText = 'display:flex;flex-direction:column;gap:4px;flex:1;';
+
+    const titleEl = document.createElement('div');
+    titleEl.textContent = title || '';
+    titleEl.style.cssText = 'font-size:13px;font-weight:600;color:#fff;letter-spacing:-0.01em;';
+    textWrap.appendChild(titleEl);
+
+    if (description) {
+      const desc = document.createElement('div');
+      desc.textContent = description;
+      desc.style.cssText = 'font-size:12px;color:#71717a;line-height:1.5;';
+      textWrap.appendChild(desc);
+    }
+
+    body.appendChild(textWrap);
+    toast.appendChild(body);
+
+    const bar = document.createElement('div');
+    bar.style.cssText = `
+      height: 3px; background: ${accentHex};
+      border-radius: 0 0 12px 12px;
+      width: 100%; margin: 0 -18px;
+      transform-origin: right;
+      transition: transform ${duration}s linear;
+    `;
+    toast.appendChild(bar);
+
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+        bar.style.transform = 'scaleX(0)';
+      });
+    });
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(12px)';
+      setTimeout(() => toast.remove(), 220);
+    }, duration * 1000);
   };
 
   global.tailweb = tailweb;
