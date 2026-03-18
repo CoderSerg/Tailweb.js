@@ -414,7 +414,7 @@
 
         Divider() {
           const hr = document.createElement('div');
-          hr.style.cssText = `height:1px;background:rgba(255,255,255,0.08);margin:2px 0;`;
+          hr.style.cssText = `height:1px;min-height:1px;flex-shrink:0;background:rgba(255,255,255,0.08);margin:2px 0;`;
           content.appendChild(hr);
           return api;
         },
