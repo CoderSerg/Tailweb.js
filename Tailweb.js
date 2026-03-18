@@ -363,7 +363,7 @@
         },
 
         Lock() {
-          if (locked) return api;
+          if (!requiredKey || locked) return api;
           locked = true;
           showKeyScreen();
           return api;
@@ -580,15 +580,12 @@
     body.appendChild(textWrap);
     toast.appendChild(body);
 
+    const barWrap = document.createElement('div');
+    barWrap.style.cssText = 'width:calc(100% + 36px);height:3px;background:rgba(255,255,255,0.06);margin:14px -18px 0;border-radius:0 0 12px 12px;overflow:hidden;';
     const bar = document.createElement('div');
-    bar.style.cssText = `
-      height: 3px; background: ${accentHex};
-      border-radius: 0 0 12px 12px;
-      width: 100%; margin: 0 -18px;
-      transform-origin: right;
-      transition: transform ${duration}s linear;
-    `;
-    toast.appendChild(bar);
+    bar.style.cssText = `height:3px;background:${accentHex};width:100%;transform-origin:right;transition:transform ${duration}s linear;`;
+    barWrap.appendChild(bar);
+    toast.appendChild(barWrap);
 
     document.body.appendChild(toast);
 
