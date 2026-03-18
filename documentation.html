@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tailweb.js — Docs</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #030712;
+    --bg2: #0a0f1a;
+    --border: rgba(255,255,255,0.07);
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --faint: #1e293b;
+    --accent: #94a3b8;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'Instrument Sans', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+  code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 248px; min-width: 248px; height: 100vh;
+    overflow-y: auto; overflow-x: hidden;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding-bottom: 24px;
+  }
+  #sidebar::-webkit-scrollbar { width: 3px; }
+  #sidebar::-webkit-scrollbar-thumb { background: var(--faint); border-radius: 2px; }
+
+  .sidebar-header { padding: 22px 20px 16px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 700; color: #f1f5f9; letter-spacing: -0.02em; }
+  .sidebar-logo span { color: var(--muted); }
+  .sidebar-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  .nav-group { padding: 16px 12px 4px; }
+  .nav-group-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0 8px; margin-bottom: 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px; border-radius: 6px;
+    font-size: 13px; color: #94a3b8; cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--faint); color: #e2e8f0; }
+  .nav-item.active { background: #1e293b; color: #f1f5f9; }
+  .nav-item .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.4; flex-shrink: 0; }
+  .nav-item.active .dot { opacity: 1; background: #94a3b8; }
+
+  /* MAIN */
+  #main { flex: 1; height: 100vh; overflow-y: auto; }
+  #main::-webkit-scrollbar { width: 4px; }
+  #main::-webkit-scrollbar-thumb { background: var(--faint); border-radius: 2px; }
+
+  .section { display: none; max-width: 780px; padding: 52px 60px 80px; }
+  .section.active { display: block; }
+
+  /* CONTENT STYLES */
+  h1 { font-size: 26px; font-weight: 600; color: #f8fafc; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .page-desc { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 36px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+  h2 { font-size: 14px; font-weight: 600; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.07em; margin: 36px 0 14px; }
+  h2:first-of-type { margin-top: 0; }
+  p { font-size: 14px; color: #94a3b8; line-height: 1.7; margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+  a { color: #94a3b8; text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: #e2e8f0; }
+  ul { padding-left: 18px; margin-bottom: 14px; }
+  li { font-size: 14px; color: #94a3b8; line-height: 1.8; }
+  li code { font-size: 12px; }
+
+  /* CODE */
+  pre {
+    background: #060d1a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    margin: 14px 0 24px;
+    position: relative;
+  }
+  pre code { font-size: 12.5px; line-height: 1.75; color: #94a3b8; }
+  .kw { color: #7dd3fc; }
+  .str { color: #86efac; }
+  .fn { color: #c4b5fd; }
+  .cm { color: #475569; font-style: italic; }
+  .num { color: #fb923c; }
+
+  p code, li code, td code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: #0f172a;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: #cbd5e1;
+  }
+
+  /* TABLE */
+  .prop-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 14px 0 24px; }
+  .prop-table th { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .prop-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; color: #94a3b8; font-size: 13px; line-height: 1.5; }
+  .prop-table tr:last-child td { border-bottom: none; }
+  .prop-table tr:hover td { background: rgba(255,255,255,0.015); }
+  .tag-type { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7dd3fc; }
+  .tag-opt { font-size: 10px; color: var(--muted); background: var(--faint); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; margin-left: 4px; font-family: 'JetBrains Mono', monospace; vertical-align: middle; }
+
+  /* CHIPS */
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 20px; }
+  .chip { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); background: #0f172a; border: 1px solid var(--border); border-radius: 4px; padding: 3px 8px; }
+
+  /* KEY SCREEN TABLE */
+  .ks-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 14px 0 24px; }
+  .ks-table th { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .ks-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #94a3b8; font-size: 13px; }
+  .ks-table tr:last-child td { border-bottom: none; }
+
+  /* DIVIDER */
+  hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Tailweb<span>.js</span></div>
+    <div class="sidebar-sub">Documentation</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Getting Started</div>
+    <div class="nav-item active" onclick="show('intro')"><span class="dot"></span>Introduction</div>
+    <div class="nav-item" onclick="show('quickstart')"><span class="dot"></span>Quick Start</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Window</div>
+    <div class="nav-item" onclick="show('window')"><span class="dot"></span>Window</div>
+    <div class="nav-item" onclick="show('keysystem')"><span class="dot"></span>Key System</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Elements</div>
+    <div class="nav-item" onclick="show('button')"><span class="dot"></span>Button</div>
+    <div class="nav-item" onclick="show('label')"><span class="dot"></span>Label</div>
+    <div class="nav-item" onclick="show('textbox')"><span class="dot"></span>TextBox</div>
+    <div class="nav-item" onclick="show('toggle')"><span class="dot"></span>Toggle</div>
+    <div class="nav-item" onclick="show('divider')"><span class="dot"></span>Divider</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Methods</div>
+    <div class="nav-item" onclick="show('key')"><span class="dot"></span>Key</div>
+    <div class="nav-item" onclick="show('lock')"><span class="dot"></span>Lock</div>
+    <div class="nav-item" onclick="show('remove')"><span class="dot"></span>Remove</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Global</div>
+    <div class="nav-item" onclick="show('popup')"><span class="dot"></span>Popup</div>
+    <div class="nav-item" onclick="show('notify')"><span class="dot"></span>Notify</div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-group-label">Guides</div>
+    <div class="nav-item" onclick="show('icons')"><span class="dot"></span>Icons</div>
+    <div class="nav-item" onclick="show('chaining')"><span class="dot"></span>Chaining</div>
+    <div class="nav-item" onclick="show('callbacks')"><span class="dot"></span>Callbacks</div>
+    <div class="nav-item" onclick="show('example')"><span class="dot"></span>Full Example</div>
+  </div>
+</aside>
+
+<main id="main">
+
+  <!-- INTRO -->
+  <div id="sec-intro" class="section active">
+    <h1>Tailweb.js</h1>
+    <p class="page-desc">A lightweight UI framework you can drop into any website via the DevTools console. Loads Tailwind CSS automatically — no setup, no build step.</p>
+    <h2>What is it?</h2>
+    <p>Tailweb lets you build fully styled floating windows with buttons, labels, inputs, toggles, popups, and notifications — all from the browser console. Drop <code>tailweb.js</code> in, and start building immediately.</p>
+    <h2>Features</h2>
+    <ul>
+      <li>Draggable, resizable windows with accent color theming</li>
+      <li>Buttons, labels, text inputs, toggles, and dividers</li>
+      <li>Key system — lock windows behind a key screen</li>
+      <li>Global popups with up to 3 buttons</li>
+      <li>Toast notifications with a progress bar</li>
+      <li><a href="https://lucide.dev/icons/" target="_blank">Lucide</a> icon support on buttons, labels, and popups</li>
+      <li>Chainable API</li>
+    </ul>
+  </div>
+
+  <!-- QUICKSTART -->
+  <div id="sec-quickstart" class="section">
+    <h1>Quick Start</h1>
+    <p class="page-desc">Get Tailweb running in seconds.</p>
+    <h2>Load it</h2>
+    <p>Paste <code>tailweb.js</code> into the DevTools console. You can't inject it via a bookmarklet due to <code>Content Security Policy</code> on most sites.</p>
+    <p>Once loaded, <code>tailweb</code> is available on <code>window</code>.</p>
+    <h2>First window</h2>
+    <pre><code><span class="kw">const</span> win = tailweb.<span class="fn">Window</span>({
+  title: <span class="str">"My Tool"</span>,
+  tailwindAccentColor: <span class="str">"cyan-500"</span>
+})
+
+win.<span class="fn">Label</span>({ title: <span class="str">"Hello, Tailweb!"</span>, size: <span class="num">14</span> })
+win.<span class="fn">Button</span>({ title: <span class="str">"Click me"</span>, callback: () => alert(<span class="str">"yo"</span>) })</code></pre>
+  </div>
+
+  <!-- WINDOW -->
+  <div id="sec-window" class="section">
+    <h1>Window</h1>
+    <p class="page-desc">Creates a draggable, resizable floating window. All elements are added to it.</p>
+    <h2>Syntax</h2>
+    <pre><code><span class="kw">const</span> win = tailweb.<span class="fn">Window</span>({
+  title,
+  tailwindAccentColor,
+  key,
+  getKey
+})</code></pre>
+    <h2>Properties</h2>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td><span class="tag-type">string</span></td><td><code>"Tailweb"</code></td><td>Title shown in the window header</td></tr>
+        <tr><td><code>tailwindAccentColor</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td><code>"gray-500"</code></td><td>Accent color — Tailwind name or hex string</td></tr>
+        <tr><td><code>key</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string | array</span></td><td>—</td><td>Lock the window behind a key screen on load. Pass a string or <code>["key1","key2"]</code> for multiple valid keys</td></tr>
+        <tr><td><code>getKey</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">function</span></td><td>—</td><td>Called when "Get Key" is clicked on the key screen</td></tr>
+      </tbody>
+    </table>
+    <h2>Accent Colors</h2>
+    <p>Pass a Tailwind color name or any hex string like <code>"#ff6b6b"</code>.</p>
+    <div class="chips">
+      <span class="chip">gray-500</span><span class="chip">blue-500</span><span class="chip">red-500</span><span class="chip">green-500</span><span class="chip">purple-500</span><span class="chip">yellow-500</span><span class="chip">pink-500</span><span class="chip">orange-500</span><span class="chip">cyan-500</span><span class="chip">indigo-500</span><span class="chip">teal-500</span><span class="chip">violet-500</span>
+    </div>
+    <h2>Example</h2>
+    <pre><code><span class="kw">const</span> win = tailweb.<span class="fn">Window</span>({
+  title: <span class="str">"My Hub"</span>,
+  tailwindAccentColor: <span class="str">"violet-500"</span>,
+  key: [<span class="str">"secret"</span>, <span class="str">"devkey"</span>],
+  getKey: () => window.<span class="fn">open</span>(<span class="str">"https://yoursite.com/getkey"</span>)
+})</code></pre>
+  </div>
+
+  <!-- KEY SYSTEM -->
+  <div id="sec-keysystem" class="section">
+    <h1>Key System</h1>
+    <p class="page-desc">Lock your window behind a key screen on load.</p>
+    <h2>How it works</h2>
+    <p>When <code>key</code> is passed to <code>tailweb.Window()</code>, a key screen overlays the window immediately. The user must enter a valid key to access the window.</p>
+    <p>You can pass a single key as a string, or multiple valid keys as an array — any of them will unlock the window.</p>
+    <h2>Key Screen Buttons</h2>
+    <table class="ks-table">
+      <thead><tr><th>Button</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Exit</td><td>Removes the window entirely</td></tr>
+        <tr><td>Get Key <span class="tag-opt">optional</span></td><td>Only shown if <code>getKey</code> is provided. Calls the function you passed</td></tr>
+        <tr><td>Submit</td><td>Validates the key — dismisses screen if correct, flashes red if wrong</td></tr>
+      </tbody>
+    </table>
+    <p>All key screen elements follow the window's accent color.</p>
+    <h2>Example</h2>
+    <pre><code><span class="cm">// Single key</span>
+<span class="kw">const</span> win = tailweb.<span class="fn">Window</span>({
+  title: <span class="str">"Locked"</span>,
+  key: <span class="str">"supersecret"</span>,
+  getKey: () => window.<span class="fn">open</span>(<span class="str">"https://yoursite.com/key"</span>)
+})
+
+<span class="cm">// Multiple keys</span>
+<span class="kw">const</span> win = tailweb.<span class="fn">Window</span>({
+  title: <span class="str">"Locked"</span>,
+  key: [<span class="str">"key1"</span>, <span class="str">"key2"</span>, <span class="str">"devmode"</span>]
+})</code></pre>
+    <h2>Re-locking</h2>
+    <p>Use <code>win.Lock()</code> to re-show the key screen at any time. See the <span style="cursor:pointer;text-decoration:underline;color:#94a3b8" onclick="show('lock')">Lock</span> page.</p>
+  </div>
+
+  <!-- BUTTON -->
+  <div id="sec-button" class="section">
+    <h1>Button</h1>
+    <p class="page-desc">Adds a clickable button to the window.</p>
+    <h2>Syntax</h2>
+    <pre><code>win.<span class="fn">Button</span>({
+  title,
+  callback,
+  icon,
+  iconColor
+})</code></pre>
+    <h2>Properties</h2>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td><span class="tag-type">string</span></td><td><code>"Button"</code></td><td>Text displayed on the button</td></tr>
+        <tr><td><code>callback</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">function</span></td><td>—</td><td>Called when the button is clicked</td></tr>
+        <tr><td><code>icon</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td>—</td><td>Lucide icon name e.g. <code>"trash-2"</code></td></tr>
+        <tr><td><code>iconColor</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td><code>"#ffffff"</code></td><td>Icon color — Tailwind name or hex</td></tr>
+      </tbody>
+    </table>
+    <h2>Example</h2>
+    <pre><code>win.<span class="fn">Button</span>({ title: <span class="str">"Save"</span>, icon: <span class="str">"save"</span>, callback: () => console.<span class="fn">log</span>(<span class="str">"saved"</span>) })
+win.<span class="fn">Button</span>({ title: <span class="str">"Delete"</span>, icon: <span class="str">"trash-2"</span>, iconColor: <span class="str">"red-500"</span>, callback: () => {} })</code></pre>
+  </div>
+
+  <!-- LABEL -->
+  <div id="sec-label" class="section">
+    <h1>Label</h1>
+    <p class="page-desc">Adds a static text label to the window.</p>
+    <h2>Syntax</h2>
+    <pre><code>win.<span class="fn">Label</span>({
+  title,
+  size,
+  icon,
+  iconColor
+})</code></pre>
+    <h2>Properties</h2>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td><span class="tag-type">string</span></td><td><code>""</code></td><td>Text content of the label</td></tr>
+        <tr><td><code>size</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">number</span></td><td><code>11</code></td><td>Font size in pixels</td></tr>
+        <tr><td><code>icon</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td>—</td><td>Lucide icon name</td></tr>
+        <tr><td><code>iconColor</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td><code>"#ffffff"</code></td><td>Icon color — Tailwind name or hex</td></tr>
+      </tbody>
+    </table>
+    <h2>Example</h2>
+    <pre><code>win.<span class="fn">Label</span>({ title: <span class="str">"Info"</span>, size: <span class="num">13</span> })
+win.<span class="fn">Label</span>({ title: <span class="str">"Settings"</span>, icon: <span class="str">"settings"</span>, size: <span class="num">12</span> })
+win.<span class="fn">Label</span>({ title: <span class="str">"Warning"</span>, icon: <span class="str">"triangle-alert"</span>, iconColor: <span class="str">"yellow-500"</span> })</code></pre>
+  </div>
+
+  <!-- TEXTBOX -->
+  <div id="sec-textbox" class="section">
+    <h1>TextBox</h1>
+    <p class="page-desc">Adds a text input. Binds to a ref object and updates live or on blur.</p>
+    <h2>Syntax</h2>
+    <pre><code>win.<span class="fn">TextBox</span>({
+  title,
+  placeholder,
+  variable,
+  value,
+  updateBlur
+})</code></pre>
+    <h2>Properties</h2>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td><span class="tag-type">string</span></td><td>—</td><td>Label shown above the input</td></tr>
+        <tr><td><code>placeholder</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td><code>""</code></td><td>Placeholder text inside the input</td></tr>
+        <tr><td><code>variable</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">ref object</span></td><td>—</td><td>Ref object to bind the value to</td></tr>
+        <tr><td><code>value</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td><code>""</code></td><td>Default pre-filled value</td></tr>
+        <tr><td><code>updateBlur</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">boolean</span></td><td><code>false</code></td><td><code>false</code> = update on every keystroke, <code>true</code> = update only on blur</td></tr>
+      </tbody>
+    </table>
+    <h2>Variable Binding</h2>
+    <p>JS primitives can't be passed by reference, so use a ref object:</p>
+    <pre><code><span class="kw">const</span> myVar = { __tailwebRef: { value: <span class="str">""</span> } }
+
+win.<span class="fn">TextBox</span>({ title: <span class="str">"Name"</span>, variable: myVar })
+
+console.<span class="fn">log</span>(myVar.__tailwebRef.value) <span class="cm">// read current value</span></code></pre>
+    <h2>Example</h2>
+    <pre><code><span class="kw">const</span> query = { __tailwebRef: { value: <span class="str">""</span> } }
+
+win.<span class="fn">TextBox</span>({
+  title: <span class="str">"Search"</span>,
+  placeholder: <span class="str">"Type to search..."</span>,
+  variable: query,
+  value: <span class="str">"default text"</span>,
+  updateBlur: <span class="kw">true</span>
+})</code></pre>
+  </div>
+
+  <!-- TOGGLE -->
+  <div id="sec-toggle" class="section">
+    <h1>Toggle</h1>
+    <p class="page-desc">Adds an on/off switch. Fires a callback with <code>true</code> or <code>false</code> every time it's flipped.</p>
+    <h2>Syntax</h2>
+    <pre><code>win.<span class="fn">Toggle</span>({
+  title,
+  value,
+  callback
+})</code></pre>
+    <h2>Properties</h2>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td><span class="tag-type">string</span></td><td>—</td><td>Label shown next to the toggle</td></tr>
+        <tr><td><code>value</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">boolean</span></td><td><code>false</code></td><td>Initial state</td></tr>
+        <tr><td><code>callback</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">function</span></td><td>—</td><td>Called with <code>true</code>/<code>false</code> when flipped</td></tr>
+      </tbody>
+    </table>
+    <h2>Example</h2>
+    <pre><code>win.<span class="fn">Toggle</span>({
+  title: <span class="str">"Enable feature"</span>,
+  value: <span class="kw">false</span>,
+  callback: (state) => console.<span class="fn">log</span>(<span class="str">"on:"</span>, state)
+})
+
+<span class="cm">// with a named function — no parentheses</span>
+<span class="kw">function</span> <span class="fn">onToggle</span>(state) { console.<span class="fn">log</span>(state) }
+win.<span class="fn">Toggle</span>({ title: <span class="str">"Toggle"</span>, callback: onToggle })</code></pre>
+  </div>
+
+  <!-- DIVIDER -->
+  <div id="sec-divider" class="section">
+    <h1>Divider</h1>
+    <p class="page-desc">Adds a horizontal separator line between elements.</p>
+    <h2>Syntax</h2>
+    <pre><code>win.<span class="fn">Divider</span>()</code></pre>
+    <h2>Example</h2>
+    <pre><code>win.<span class="fn">Label</span>({ title: <span class="str">"Section A"</span> })
+win.<span class="fn">Button</span>({ title: <span class="str">"Do thing"</span> })
+win.<span class="fn">Divider</span>()
+win.<span class="fn">Label</span>({ title: <span class="str">"Section B"</span> })</code></pre>
+  </div>
+
+  <!-- KEY METHOD -->
+  <div id="sec-key" class="section">
+    <h1>Key</h1>
+    <p class="page-desc">Binds a keyboard key to toggle the window's visibility.</p>
+    <h2>Syntax</h2>
+    <pre><code>win.<span class="fn">Key</span>({ key })</code></pre>
+    <h2>Properties</h2>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>key</code></td><td><span class="tag-type">string</span></td><td>Any valid <a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values" target="_blank">KeyboardEvent.key</a> value</td></tr>
+      </tbody>
+    </table>
+    <h2>Example</h2>
+    <pre><code>win.<span class="fn">Key</span>({ key: <span class="str">"F2"</span> })
+win.<span class="fn">Key</span>({ key: <span class="str">"`"</span> })
+win.<span class="fn">Key</span>({ key: <span class="str">"Escape"</span> })</code></pre>
+  </div>
+
+  <!-- LOCK -->
+  <div id="sec-lock" class="section">
+    <h1>Lock</h1>
+    <p class="page-desc">Re-shows the key screen, locking the window again.</p>
+    <h2>Syntax</h2>
+    <pre><code>win.<span class="fn">Lock</span>()</code></pre>
+    <h2>Notes</h2>
+    <p>Does nothing if no <code>key</code> was set on the window, or if the window is already locked.</p>
+    <h2>Example</h2>
+    <pre><code>win.<span class="fn">Button</span>({
+  title: <span class="str">"Lock"</span>,
+  icon: <span class="str">"lock"</span>,
+  callback: () => win.<span class="fn">Lock</span>()
+})</code></pre>
+  </div>
+
+  <!-- REMOVE -->
+  <div id="sec-remove" class="section">
+    <h1>Remove</h1>
+    <p class="page-desc">Destroys the window and all its elements.</p>
+    <h2>Syntax</h2>
+    <pre><code>win.<span class="fn">Remove</span>()</code></pre>
+    <h2>Notes</h2>
+    <p><code>tailweb</code> stays available after <code>Remove()</code> — you can create a new window anytime.</p>
+    <h2>Example</h2>
+    <pre><code>win.<span class="fn">Button</span>({
+  title: <span class="str">"Close"</span>,
+  icon: <span class="str">"x"</span>,
+  iconColor: <span class="str">"red-500"</span>,
+  callback: () => win.<span class="fn">Remove</span>()
+})</code></pre>
+  </div>
+
+  <!-- POPUP -->
+  <div id="sec-popup" class="section">
+    <h1>Popup</h1>
+    <p class="page-desc">Shows a centered modal with a dark overlay. Accent color is pulled from a random existing window.</p>
+    <h2>Syntax</h2>
+    <pre><code>tailweb.<span class="fn">Popup</span>({
+  title,
+  description,
+  icon,
+  button1,
+  button2,
+  button3,
+  cbutton1,
+  cbutton2,
+  cbutton3
+})</code></pre>
+    <h2>Properties</h2>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td><span class="tag-type">string</span></td><td>—</td><td>Popup title</td></tr>
+        <tr><td><code>description</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td>—</td><td>Body text below the title</td></tr>
+        <tr><td><code>icon</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td>—</td><td>Lucide icon shown on <code>button1</code></td></tr>
+        <tr><td><code>button1</code></td><td><span class="tag-type">string</span></td><td>—</td><td>Primary button (accent-tinted)</td></tr>
+        <tr><td><code>button2</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td><code>"Cancel"</code></td><td>If omitted, auto-adds a Cancel button that closes the popup</td></tr>
+        <tr><td><code>button3</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td>—</td><td>Third button</td></tr>
+        <tr><td><code>cbutton1</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">function</span></td><td>—</td><td>Called when <code>button1</code> is clicked</td></tr>
+        <tr><td><code>cbutton2</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">function</span></td><td>—</td><td>Called when <code>button2</code> is clicked</td></tr>
+        <tr><td><code>cbutton3</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">function</span></td><td>—</td><td>Called when <code>button3</code> is clicked</td></tr>
+      </tbody>
+    </table>
+    <p>Buttons render right-to-left: <code>button3</code>, <code>button2</code>/Cancel, <code>button1</code>.</p>
+    <h2>Example</h2>
+    <pre><code><span class="cm">// Simple confirm</span>
+tailweb.<span class="fn">Popup</span>({
+  title: <span class="str">"Are you sure?"</span>,
+  description: <span class="str">"This can't be undone."</span>,
+  button1: <span class="str">"Continue"</span>,
+  icon: <span class="str">"arrow-right"</span>,
+  cbutton1: () => console.<span class="fn">log</span>(<span class="str">"confirmed"</span>)
+})
+
+<span class="cm">// Three buttons</span>
+tailweb.<span class="fn">Popup</span>({
+  title: <span class="str">"Save changes?"</span>,
+  button1: <span class="str">"Save"</span>,
+  button2: <span class="str">"Discard"</span>,
+  button3: <span class="str">"Cancel"</span>,
+  cbutton1: () => console.<span class="fn">log</span>(<span class="str">"saved"</span>),
+  cbutton2: () => console.<span class="fn">log</span>(<span class="str">"discarded"</span>)
+})</code></pre>
+  </div>
+
+  <!-- NOTIFY -->
+  <div id="sec-notify" class="section">
+    <h1>Notify</h1>
+    <p class="page-desc">Shows a toast notification in the bottom right. The accent-colored progress bar shrinks right to left over the duration.</p>
+    <h2>Syntax</h2>
+    <pre><code>tailweb.<span class="fn">Notify</span>({
+  title,
+  description,
+  icon,
+  time
+})</code></pre>
+    <h2>Properties</h2>
+    <table class="prop-table">
+      <thead><tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>title</code></td><td><span class="tag-type">string</span></td><td>—</td><td>Notification title</td></tr>
+        <tr><td><code>description</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td>—</td><td>Body text below the title</td></tr>
+        <tr><td><code>icon</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">string</span></td><td>—</td><td>Lucide icon name, shown at 32px</td></tr>
+        <tr><td><code>time</code> <span class="tag-opt">optional</span></td><td><span class="tag-type">number</span></td><td><code>3</code></td><td>Seconds before auto-dismiss</td></tr>
+      </tbody>
+    </table>
+    <h2>Example</h2>
+    <pre><code>tailweb.<span class="fn">Notify</span>({
+  title: <span class="str">"Saved"</span>,
+  description: <span class="str">"Your changes were saved."</span>,
+  icon: <span class="str">"check-circle"</span>,
+  time: <span class="num">4</span>
+})</code></pre>
+  </div>
+
+  <!-- ICONS -->
+  <div id="sec-icons" class="section">
+    <h1>Icons</h1>
+    <p class="page-desc">Lucide icons on buttons, labels, popups, and notifications — fetched automatically.</p>
+    <h2>How it works</h2>
+    <p>Pass any valid <a href="https://lucide.dev/icons/" target="_blank">Lucide</a> icon name to the <code>icon</code> property. Tailweb fetches the SVG from the CDN and injects it inline — no setup needed.</p>
+    <ul>
+      <li>Icons render to the left of text</li>
+      <li>Size matches the element's font size</li>
+      <li>Default color is white unless <code>iconColor</code> is set</li>
+      <li><code>iconColor</code> accepts the same Tailwind names or hex strings as <code>tailwindAccentColor</code></li>
+      <li>Icons are fetched async — they pop in a moment after the element renders</li>
+    </ul>
+    <h2>Supported on</h2>
+    <ul>
+      <li><code>win.Button()</code> — <code>icon</code> and <code>iconColor</code></li>
+      <li><code>win.Label()</code> — <code>icon</code> and <code>iconColor</code></li>
+      <li><code>tailweb.Popup()</code> — <code>icon</code> on <code>button1</code> only</li>
+      <li><code>tailweb.Notify()</code> — <code>icon</code> at 32px</li>
+    </ul>
+    <h2>Example</h2>
+    <pre><code>win.<span class="fn">Button</span>({ title: <span class="str">"Delete"</span>, icon: <span class="str">"trash-2"</span>, iconColor: <span class="str">"red-500"</span> })
+win.<span class="fn">Button</span>({ title: <span class="str">"Save"</span>, icon: <span class="str">"save"</span> })
+win.<span class="fn">Label</span>({ title: <span class="str">"Settings"</span>, icon: <span class="str">"settings"</span>, size: <span class="num">13</span> })
+win.<span class="fn">Label</span>({ title: <span class="str">"Warning"</span>, icon: <span class="str">"triangle-alert"</span>, iconColor: <span class="str">"yellow-500"</span> })</code></pre>
+  </div>
+
+  <!-- CHAINING -->
+  <div id="sec-chaining" class="section">
+    <h1>Chaining</h1>
+    <p class="page-desc">All element methods return the window instance so you can chain calls.</p>
+    <h2>Example</h2>
+    <pre><code>tailweb.<span class="fn">Window</span>({ title: <span class="str">"Toolbox"</span>, tailwindAccentColor: <span class="str">"violet-500"</span> })
+  .<span class="fn">Label</span>({ title: <span class="str">"Config"</span>, icon: <span class="str">"settings"</span> })
+  .<span class="fn">TextBox</span>({ title: <span class="str">"API Key"</span>, placeholder: <span class="str">"sk-..."</span> })
+  .<span class="fn">Divider</span>()
+  .<span class="fn">Toggle</span>({ title: <span class="str">"Enable"</span>, callback: (s) => console.<span class="fn">log</span>(s) })
+  .<span class="fn">Button</span>({ title: <span class="str">"Submit"</span>, icon: <span class="str">"check"</span>, callback: () => {} })
+  .<span class="fn">Key</span>({ key: <span class="str">"F1"</span> })</code></pre>
+  </div>
+
+  <!-- CALLBACKS -->
+  <div id="sec-callbacks" class="section">
+    <h1>Callbacks</h1>
+    <p class="page-desc">How to correctly pass functions as callbacks.</p>
+    <h2>Always pass, never call</h2>
+    <p>Pass the function reference — no parentheses. Adding <code>()</code> calls the function immediately at the time the element is created, and passes its return value instead of the function itself.</p>
+    <pre><code><span class="cm">// ✅ correct — passes the function</span>
+win.<span class="fn">Button</span>({ title: <span class="str">"Hi"</span>, callback: myFunc })
+win.<span class="fn">Toggle</span>({ title: <span class="str">"Toggle"</span>, callback: myFunc })
+
+<span class="cm">// ✅ also correct — arrow function</span>
+win.<span class="fn">Button</span>({ title: <span class="str">"Hi"</span>, callback: () => <span class="fn">myFunc</span>() })
+
+<span class="cm">// ❌ wrong — calls immediately, passes return value</span>
+win.<span class="fn">Button</span>({ title: <span class="str">"Hi"</span>, callback: <span class="fn">myFunc</span>() })</code></pre>
+    <h2>Toggle callbacks</h2>
+    <p>Toggle passes the current state as a boolean argument to your callback:</p>
+    <pre><code><span class="kw">function</span> <span class="fn">onFlip</span>(state) {
+  console.<span class="fn">log</span>(<span class="str">"Toggle is now:"</span>, state) <span class="cm">// true or false</span>
+}
+
+win.<span class="fn">Toggle</span>({ title: <span class="str">"Feature"</span>, callback: onFlip })</code></pre>
+  </div>
+
+  <!-- FULL EXAMPLE -->
+  <div id="sec-example" class="section">
+    <h1>Full Example</h1>
+    <p class="page-desc">Everything Tailweb has, in one script.</p>
+    <pre><code><span class="kw">const</span> nameRef = { __tailwebRef: { value: <span class="str">""</span> } }
+
+<span class="kw">const</span> win = tailweb.<span class="fn">Window</span>({
+  title: <span class="str">"My Hub"</span>,
+  tailwindAccentColor: <span class="str">"cyan-500"</span>,
+  key: [<span class="str">"letmein"</span>, <span class="str">"devmode"</span>],
+  getKey: () => window.<span class="fn">open</span>(<span class="str">"https://yoursite.com/getkey"</span>)
+})
+
+win.<span class="fn">Label</span>({ title: <span class="str">"Enter your info"</span>, icon: <span class="str">"clipboard"</span>, size: <span class="num">11</span> })
+win.<span class="fn">TextBox</span>({ title: <span class="str">"Name"</span>, placeholder: <span class="str">"John Doe"</span>, variable: nameRef })
+win.<span class="fn">Divider</span>()
+win.<span class="fn">Toggle</span>({
+  title: <span class="str">"Notify on submit"</span>,
+  value: <span class="kw">true</span>,
+  callback: (s) => console.<span class="fn">log</span>(<span class="str">"notify:"</span>, s)
+})
+win.<span class="fn">Button</span>({
+  title: <span class="str">"Submit"</span>,
+  icon: <span class="str">"check"</span>,
+  callback: () => {
+    tailweb.<span class="fn">Popup</span>({
+      title: <span class="str">"Submitted!"</span>,
+      description: <span class="str">"Name: "</span> + nameRef.__tailwebRef.value,
+      button1: <span class="str">"OK"</span>,
+      cbutton1: () => {
+        win.<span class="fn">Remove</span>()
+        tailweb.<span class="fn">Notify</span>({ title: <span class="str">"Done"</span>, icon: <span class="str">"check-circle"</span>, time: <span class="num">2</span> })
+      }
+    })
+  }
+})
+win.<span class="fn">Button</span>({ title: <span class="str">"Lock"</span>, icon: <span class="str">"lock"</span>, callback: () => win.<span class="fn">Lock</span>() })
+win.<span class="fn">Button</span>({ title: <span class="str">"Close"</span>, icon: <span class="str">"x"</span>, iconColor: <span class="str">"red-500"</span>, callback: () => win.<span class="fn">Remove</span>() })
+win.<span class="fn">Key</span>({ key: <span class="str">"F2"</span> })</code></pre>
+  </div>
+
+</main>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') === `show('${id}')`) n.classList.add('active');
+  });
+  document.getElementById('main').scrollTo({ top: 0 });
+}
+</script>
+</body>
+</html>
