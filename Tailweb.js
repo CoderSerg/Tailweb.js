@@ -427,7 +427,7 @@
           if (!key) return api;
           document.addEventListener("keydown", (e) => {
             if (e.key === key) {
-              win.style.display = win.style.display === "none" ? "block" : "none";
+              win.style.display = win.style.display === "none" ? "flex" : "none";
             }
           });
           return api;
